@@ -70,7 +70,7 @@ export const Register = () => {
             // Recoilにユーザ情報を保存する
             setLoginUser({
                 id: registerRes.data.id,
-                name: username,
+                username: username,
             });
             console.log(registerRes);
             // ログイン用のCookieを保存する

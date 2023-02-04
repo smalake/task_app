@@ -16,10 +16,23 @@ export const Login = () => {
     const [cookie] = useCookies([""]);
 
     useEffect(() => {
-        // Sanctum認証用のトークンを持っていたら認証されているとみなしてログイン処理は省略
-        if ("XSRF-TOKEN" in cookie) {
-            navigate("/home");
-        }
+        // すでに認証されていたらログイン処理は省略
+        const loginCheck = async () => {
+            if ("XSRF-TOKEN" in cookie) {
+                try {
+                    const userRes = await axiosClient.get("/api/get-user");
+                    setLoginUser({
+                        id: userRes.data.id,
+                        username: userRes.data.username,
+                    });
+                    navigate("/main");
+                } catch (err) {
+                    if (err.status === 401) {
+                    }
+                }
+            }
+        };
+        loginCheck();
     }, []);
 
     const handleSubmit = async (event) => {
@@ -55,11 +68,11 @@ export const Login = () => {
             });
             setLoginUser({
                 id: loginRes.data.id,
-                name: loginRes.data.username,
+                username: loginRes.data.username,
             });
 
             // ログイン成功したらトップページへ
-            navigate("/home");
+            navigate("/main");
         } catch (error) {
             // ログイン失敗
             console.log(error);

@@ -16,7 +16,7 @@ use App\Http\Controllers\RegisterController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('get-user', function (Request $request) {
     return $request->user();
 });
 

@@ -11,6 +11,7 @@ import { RecoilRoot } from "recoil";
 import { CookiesProvider } from "react-cookie";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AuthLayout } from "./components/layout/AuthLayout";
+import { Main } from "./pages/Main";
 
 const App = () => {
     const theme = createTheme({
@@ -28,6 +29,7 @@ const App = () => {
                             </Route>
                             <Route path="/" element={<AppLayout />}>
                                 <Route path="home" element={<Home />} />
+                                <Route path="main" element={<Main />} />
                             </Route>
                         </Routes>
                     </BrowserRouter>

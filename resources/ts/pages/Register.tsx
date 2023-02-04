@@ -76,7 +76,7 @@ export const Register = () => {
             // ログイン用のCookieを保存する
             setCookie("isLogin", "cookie-set", { expires: expireDate });
             // 新規登録に成功したらトップページへ
-            // navigate("/home");
+            navigate("/task");
         } catch (error: any) {
             // 新規登録に失敗
             setLoading(false);

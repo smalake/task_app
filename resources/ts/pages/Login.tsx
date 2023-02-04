@@ -25,7 +25,7 @@ export const Login = () => {
                         id: userRes.data.id,
                         username: userRes.data.username,
                     });
-                    navigate("/main");
+                    navigate("/task");
                 } catch (err) {
                     if (err.status === 401) {
                     }

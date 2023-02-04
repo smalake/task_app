@@ -12,6 +12,7 @@ import { CookiesProvider } from "react-cookie";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AuthLayout } from "./components/layout/AuthLayout";
 import { Main } from "./pages/Main";
+import { Task } from "./pages/Task";
 
 const App = () => {
     const theme = createTheme({
@@ -29,7 +30,8 @@ const App = () => {
                             </Route>
                             <Route path="/" element={<AppLayout />}>
                                 <Route path="home" element={<Home />} />
-                                <Route path="main" element={<Main />} />
+                                <Route path="task" element={<Main />} />
+                                <Route path="task/:taskId" element={<Task />} />
                             </Route>
                         </Routes>
                     </BrowserRouter>

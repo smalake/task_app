@@ -43,4 +43,15 @@ class TaskController extends Controller
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    // タスクを1つ取得
+    public function getOne($id)
+    {
+        try {
+            $task = Task::find($id);
+            return response()->json($task, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

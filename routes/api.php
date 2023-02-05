@@ -26,3 +26,4 @@ Route::post('logout', [LoginController::class, 'logout']);
 Route::post('register', [RegisterController::class, 'register']);
 Route::middleware('auth:sanctum')->post('task', [TaskController::class, 'create']);
 Route::middleware('auth:sanctum')->get('task', [TaskController::class, 'getAll']);
+Route::middleware('auth:sanctum')->get('task/{id}', [TaskController::class, 'getOne']);

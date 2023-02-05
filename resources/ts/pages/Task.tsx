@@ -19,8 +19,8 @@ export const Task = () => {
     const { taskId } = useParams();
     const [month, setMonth] = useState(1);
     const [day, setDay] = useState(1);
-    const [day31, setDay31] = useState(true);
-    const [day29, setDay29] = useState(false);
+    const [day31, setDay31] = useState(true); //日付の表示制御用
+    const [day29, setDay29] = useState(false); //日付の表示制御用
     const [content, setContent] = useState("");
     const [scheduleBefore, setScheduleBefore] = useState("");
     const [scheduleAfter, setScheduleAfter] = useState("");
@@ -94,6 +94,14 @@ export const Task = () => {
         const getTask = async () => {
             try {
                 const res = await taskApi.getOne(taskId);
+                setMonth(res.data.month);
+                setDay(res.data.day);
+                setContent(res.data.content);
+                setScheduleBefore(res.data.scheduleBefore);
+                setScheduleAfter(res.data.scheduleAfter);
+                setRemaingBefore(res.data.remaingBefore);
+                setRemaingAfter(res.data.remaingAfter);
+                setImpression(res.data.impression);
             } catch (err) {}
         };
         getTask();

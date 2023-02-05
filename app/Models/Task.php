@@ -11,7 +11,8 @@ class Task extends Model
 
     protected $fillable = [
         'userId',
-        'todayDate',
+        'month',
+        'day',
         'scheduleBefore',
         'scheduleAfter',
         'content',

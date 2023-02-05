@@ -7,14 +7,15 @@ import { Box } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 export const Main = () => {
-    const naviagte = useNavigate();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
     const createTask = async () => {
         try {
             setLoading(true);
             const res = await taskApi.create();
-            console.log(res);
+            console.log(res.data.todayDate);
+            navigate(`/task/${res.data.id}`);
         } catch (err) {
             console.log(err);
         } finally {

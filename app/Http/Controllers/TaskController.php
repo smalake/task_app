@@ -17,7 +17,8 @@ class TaskController extends Controller
             // 新規作成
             $task = Task::create([
                 'userId' => Auth::id(),
-                'todayDate' => '',
+                'month' => date('n'),
+                'day' => date('j'),
                 'content' => '',
                 'scheduleBefore' => '',
                 'scheduleAfter' => '',
@@ -36,8 +37,8 @@ class TaskController extends Controller
     {
         try {
             // ログイン中のユーザのメモを全て取得
-            $memo = Task::where('userId', '=', Auth::id())->get();
-            return response()->json($memo, Response::HTTP_OK);
+            $task = Task::where('userId', '=', Auth::id())->get();
+            return response()->json($task, Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }

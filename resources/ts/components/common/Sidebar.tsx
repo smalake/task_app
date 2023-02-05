@@ -12,16 +12,20 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useRecoilState } from "recoil";
 import { loginUserState } from "../../recoil/loginUser";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { axiosClient } from "../../api/axiosClient";
 import { LoadingButton } from "@mui/lab";
 import { taskApi } from "../../api/taskApi";
+import { allTaskState } from "../../recoil/allTask";
 
 export const Sidebar = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
     const [loginUser, setLoginUser] = useRecoilState(loginUserState);
+    const [tasks, setTasks] = useRecoilState(allTaskState);
+    const { taskId } = useParams();
 
     useEffect(() => {
         const userCheck = async () => {
@@ -46,6 +50,28 @@ export const Sidebar = () => {
         userCheck();
     }, [navigate]);
 
+    useEffect(() => {
+        const targetIndex = tasks.findIndex((item) => {
+            console.log(item.id);
+            console.log(taskId);
+            return item.id === taskId;
+        });
+        setActiveIndex(targetIndex + 1);
+    }, [navigate]);
+
+    useEffect(() => {
+        // タスク一覧を取得
+        const getTasks = async () => {
+            try {
+                const res = await taskApi.getAll();
+                setTasks(res.data);
+            } catch (err) {
+                alert(err);
+            }
+        };
+        getTasks();
+    }, []);
+
     // リストを開閉する
     const handleClick = () => {
         setOpen(!open);
@@ -56,6 +82,7 @@ export const Sidebar = () => {
             setLoading(true);
             const res = await taskApi.create();
             console.log(res);
+            navigate(`/task/${res.data.id}`);
         } catch (err) {
             alert(err);
         } finally {
@@ -87,15 +114,21 @@ export const Sidebar = () => {
                 新規作成
             </LoadingButton>
             <ListItemButton onClick={handleClick}>
-                <ListItemText primary="Inbox" />
+                <ListItemText primary="2月" />
                 {open ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                    <ListItemButton sx={{ pl: 4 }}>
-                        <ListItemText primary="Starred" />
+                {tasks.map((item, index) => (
+                    <ListItemButton
+                        sx={{ pl: "20px" }}
+                        selected={index === activeIndex}
+                        component={Link}
+                        to={`/task/${item.id}`}
+                        key={item.id}
+                    >
+                        {item.month}月{item.day}日
                     </ListItemButton>
-                </List>
+                ))}
             </Collapse>
         </List>
     );

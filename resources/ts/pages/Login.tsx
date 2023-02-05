@@ -72,7 +72,7 @@ export const Login = () => {
             });
 
             // ログイン成功したらトップページへ
-            navigate("/main");
+            navigate("/task");
         } catch (error) {
             // ログイン失敗
             console.log(error);

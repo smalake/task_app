@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('userId')->constrained('users');
-            $table->string('todayDate');
+            $table->integer('month');
+            $table->integer('day');
             $table->string('scheduleBefore')->comment('今日の作業予定');
             $table->string('scheduleAfter')->comment('明日の作業予定');
             $table->string('content')->comment('今日行った作業内容');

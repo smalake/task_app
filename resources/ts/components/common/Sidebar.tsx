@@ -50,27 +50,26 @@ export const Sidebar = () => {
         userCheck();
     }, [navigate]);
 
+    // タスク一覧を取得
     useEffect(() => {
-        const targetIndex = tasks.findIndex((item) => {
-            console.log(item.id);
-            console.log(taskId);
-            return item.id === taskId;
-        });
-        setActiveIndex(targetIndex + 1);
-    }, [navigate]);
-
-    useEffect(() => {
-        // タスク一覧を取得
         const getTasks = async () => {
             try {
                 const res = await taskApi.getAll();
                 setTasks(res.data);
             } catch (err) {
-                alert(err);
+                console.log(err);
             }
         };
         getTasks();
-    }, []);
+    }, [navigate]);
+
+    // 選択されているタスクに色を付ける
+    useEffect(() => {
+        const targetIndex = tasks.findIndex(
+            (item: TaskList) => item.id === Number(taskId)
+        );
+        setActiveIndex(targetIndex);
+    }, [navigate]);
 
     // リストを開閉する
     const handleClick = () => {
@@ -118,7 +117,7 @@ export const Sidebar = () => {
                 {open ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={open} timeout="auto" unmountOnExit>
-                {tasks.map((item, index) => (
+                {tasks.map((item: TaskList, index: Number) => (
                     <ListItemButton
                         sx={{ pl: "20px" }}
                         selected={index === activeIndex}

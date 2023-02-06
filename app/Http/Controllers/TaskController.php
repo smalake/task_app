@@ -54,4 +54,36 @@ class TaskController extends Controller
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    // タスクを1つ更新
+    public function update(Request $request, $id)
+    {
+        try {
+            // 作業前のタスクを更新
+            if ($request->timing === 'before') {
+                $task = Task::where('id', $id)->update([
+                    'month' => $request->month,
+                    'day' => $request->day,
+                    'scheduleBefore' => $request->scheduleBefore,
+                    'remaingTaskBefore' => $request->remaingBefore,
+                    'remaingTaskAfter' => $request->remaingAfter ?? $request->remaingBefore,
+                    'content' => $request->content ?? $request->scheduleBefore
+                ]);
+            }
+            // 作業後のタスクを更新
+            if ($request->timing === 'after') {
+                $task = Task::where('id', $id)->update([
+                    'month' => $request->month,
+                    'day' => $request->day,
+                    'scheduleAfter' => $request->scheduleAfter,
+                    'remaingTaskAfter' => $request->remaingAfter,
+                    'content' => $request->content,
+                    'impression' => $request->impression
+                ]);
+            }
+            return response()->json($task, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

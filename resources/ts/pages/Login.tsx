@@ -73,9 +73,9 @@ export const Login = () => {
 
             // ログイン成功したらトップページへ
             navigate("/task");
-        } catch (error) {
+        } catch (err) {
             // ログイン失敗
-            console.log(error);
+            console.log(err);
             alert("ユーザ名かパスワードが間違っています");
             setLoading(false);
         }

@@ -28,10 +28,10 @@ export const Task = () => {
     const [remaingAfter, setRemaingAfter] = useState("");
     const [impression, setImpression] = useState("");
     const [tabIndex, setTabIndex] = useState(0); //タブ切り替え用
-    const [displayMode, setDisplayMode] = useState("none"); //表示モードの表示・非表示の制御用
-    const [displayEditMode, setDisplayEditMode] = useState("flex"); //編集モードの表示・非表示の制御用
+    const [displayMode, setDisplayMode] = useState("block"); //表示モードの表示・非表示の制御用
+    const [displayEditMode, setDisplayEditMode] = useState("none"); //編集モードの表示・非表示の制御用
     const [disableTabBefore, setDisableTabBefore] = useState(false);
-    const [disableTabAfter, setDisableTabAfter] = useState(true);
+    const [disableTabAfter, setDisableTabAfter] = useState(false);
 
     // 選択された月に応じて選択できる日を制限する
     useEffect(() => {
@@ -99,8 +99,8 @@ export const Task = () => {
                 setContent(res.data.content);
                 setScheduleBefore(res.data.scheduleBefore);
                 setScheduleAfter(res.data.scheduleAfter);
-                setRemaingBefore(res.data.remaingBefore);
-                setRemaingAfter(res.data.remaingAfter);
+                setRemaingBefore(res.data.remaingTaskBefore);
+                setRemaingAfter(res.data.remaingTaskAfter);
                 setImpression(res.data.impression);
             } catch (err) {}
         };
@@ -153,25 +153,67 @@ export const Task = () => {
         setImpression(newImpression);
     };
     // 作業前の入力を保存
-    const saveBefore = () => {
+    const saveBefore = async () => {
+        // 表示・非表示の切り替え
         setDisplayMode("block");
         setDisplayEditMode("none");
         setDisableTabAfter(false);
+        try {
+            // 作業内容が空欄だったら作業予定をコピーする
+            if (content === "") {
+                setContent(scheduleBefore);
+            }
+            // 明日の予定が空欄だったら今日の予定をコピーする
+            if (remaingAfter === "") {
+                setRemaingAfter(remaingBefore);
+            }
+            // 内容をDBへと保存
+            await taskApi.update(taskId, {
+                month: month,
+                day: day,
+                scheduleBefore: scheduleBefore,
+                remaingBefore: remaingBefore,
+                remaingAfter: remaingAfter,
+                content: content,
+                timing: "before",
+            });
+        } catch (err) {
+            alert("更新に失敗しました");
+            console.log(err);
+        }
     };
     // 作業前のタスクを編集
     const editBefore = () => {
+        // 表示・非表示の切り替え
         setDisplayMode("none");
         setDisplayEditMode("flex");
         setDisableTabAfter(true);
     };
     // 作業後の入力を保存
-    const saveAfter = () => {
+    const saveAfter = async () => {
+        // 表示・非表示の切り替え
         setDisplayMode("block");
         setDisplayEditMode("none");
         setDisableTabBefore(false);
+        // 内容をDBへと保存
+        try {
+            await taskApi.update(taskId, {
+                month: month,
+                day: day,
+                scheduleAfter: scheduleAfter,
+                remaingAfter: remaingAfter,
+                content: content,
+                impression: impression,
+                timing: "after",
+            });
+        } catch (err) {
+            alert("更新に失敗しました");
+            console.log(err);
+        }
     };
     // 作業後のタスクを編集
     const editAfter = () => {
+        // 表示・非表示の切り替え
         setDisplayMode("none");
         setDisplayEditMode("flex");
         setDisableTabBefore(true);
@@ -184,7 +226,7 @@ export const Task = () => {
             </Tabs>
             <Box sx={{ padding: 2 }}>
                 <Box display={displayEditMode}>
-                    <FormControl>
+                    <FormControl sx={{ margin: "10px 5px" }}>
                         <InputLabel id="select-month">月</InputLabel>
                         <Select
                             value={month}
@@ -206,7 +248,7 @@ export const Task = () => {
                             <MenuItem value={12}>12月</MenuItem>
                         </Select>
                     </FormControl>
-                    <FormControl>
+                    <FormControl sx={{ margin: "10px 5px" }}>
                         <InputLabel id="select-day">日</InputLabel>
                         <Select
                             value={day}
@@ -255,14 +297,26 @@ export const Task = () => {
                 {/* 朝が選択された場合 */}
                 {tabIndex === 0 && (
                     <Box>
+                        {/* 表示モード */}
                         <Box display={displayMode}>
                             <Box component="p">
                                 日付:{month}月{day}日
                             </Box>
-                            <Box component="p">作業予定:{scheduleBefore}</Box>
-                            <Box component="p">残タスク:{remaingBefore}</Box>
-                            <Button onClick={editBefore}>編集</Button>
+                            <Box component="p" sx={{ whiteSpace: "pre" }}>
+                                作業予定:
+                                <br />
+                                {scheduleBefore}
+                            </Box>
+                            <Box component="p" sx={{ whiteSpace: "pre" }}>
+                                残タスク:
+                                <br />
+                                {remaingBefore}
+                            </Box>
+                            <Button onClick={editBefore} variant="outlined">
+                                編集
+                            </Button>
                         </Box>
+                        {/* 編集モード */}
                         <Box
                             sx={{ flexDirection: "column" }}
                             display={displayEditMode}
@@ -273,6 +327,7 @@ export const Task = () => {
                                 rows={5}
                                 value={scheduleBefore}
                                 onChange={updateScheduleBefore}
+                                sx={{ margin: "10px 5px" }}
                             ></TextField>
                             <TextField
                                 label="残タスク"
@@ -280,21 +335,95 @@ export const Task = () => {
                                 rows={5}
                                 value={remaingBefore}
                                 onChange={updateRemaingBefore}
+                                sx={{ margin: "10px 5px" }}
                             ></TextField>
-                            <Button onClick={saveBefore}>保存</Button>
+                            <Button
+                                sx={{ width: "20%" }}
+                                onClick={saveBefore}
+                                variant="outlined"
+                            >
+                                保存
+                            </Button>
                         </Box>
                     </Box>
                 )}
                 {/* 夕が選択された場合 */}
                 {tabIndex === 1 && (
                     <Box>
-                        <Box component="p">
-                            日付:{month}月{day}日
+                        {/* 表示モード */}
+                        <Box display={displayMode}>
+                            <Box component="p">
+                                日付:{month}月{day}日
+                            </Box>
+                            <Box component="p">
+                                作業内容:
+                                <br />
+                                {content}
+                            </Box>
+                            <Box component="p" sx={{ whiteSpace: "pre" }}>
+                                作業予定:
+                                <br />
+                                {scheduleAfter}
+                            </Box>
+                            <Box component="p" sx={{ whiteSpace: "pre" }}>
+                                残タスク:
+                                <br />
+                                {remaingAfter}
+                            </Box>
+                            <Box component="p" sx={{ whiteSpace: "pre" }}>
+                                所感:
+                                <br />
+                                {impression}
+                            </Box>
+                            <Button onClick={editAfter} variant="outlined">
+                                編集
+                            </Button>
                         </Box>
-                        <Box component="p">作業内容:{content}</Box>
-                        <Box component="p">作業予定:{scheduleAfter}</Box>
-                        <Box component="p">残タスク:{remaingAfter}</Box>
-                        <Box component="p">所感:{impression}</Box>
+                        {/* 編集モード */}
+                        <Box
+                            sx={{ flexDirection: "column" }}
+                            display={displayEditMode}
+                        >
+                            <TextField
+                                label="作業内容"
+                                multiline
+                                rows={5}
+                                value={content}
+                                onChange={updateContent}
+                                sx={{ margin: "10px 5px" }}
+                            ></TextField>
+                            <TextField
+                                label="作業予定"
+                                multiline
+                                rows={5}
+                                value={scheduleAfter}
+                                onChange={updateScheduleAfter}
+                                sx={{ margin: "10px 5px" }}
+                            ></TextField>
+                            <TextField
+                                label="残タスク"
+                                multiline
+                                rows={5}
+                                value={remaingAfter}
+                                onChange={updateRemaingAfter}
+                                sx={{ margin: "10px 5px" }}
+                            ></TextField>
+                            <TextField
+                                label="所感"
+                                multiline
+                                rows={5}
+                                value={impression}
+                                onChange={updateImpression}
+                                sx={{ margin: "10px 5px" }}
+                            ></TextField>
+                            <Button
+                                sx={{ width: "20%" }}
+                                onClick={saveAfter}
+                                variant="outlined"
+                            >
+                                保存
+                            </Button>
+                        </Box>
                     </Box>
                 )}
             </Box>

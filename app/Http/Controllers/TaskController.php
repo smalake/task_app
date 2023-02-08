@@ -37,8 +37,63 @@ class TaskController extends Controller
     {
         try {
             // ログイン中のユーザのメモを全て取得
-            $task = Task::where('userId', '=', Auth::id())->get();
-            return response()->json($task, Response::HTTP_OK);
+            $tasks = Task::where('userId', '=', Auth::id())->get();
+            $resultTask = array(
+                'Jan' => array(),
+                'Feb' => array(),
+                'Mar' => array(),
+                'Apr' => array(),
+                'May' => array(),
+                'Jun' => array(),
+                'Jul' => array(),
+                'Aug' => array(),
+                'Sep' => array(),
+                'Oct' => array(),
+                'Nov' => array(),
+                'Dec' => array(),
+            );
+            // タスクを月毎に分別する
+            foreach ($tasks as $task) {
+                switch ($task['month']) {
+                    case 1:
+                        array_push($resultTask['Jan'], $task);
+                        break;
+                    case 2:
+                        array_push($resultTask['Feb'], $task);
+                        break;
+                    case 3:
+                        array_push($resultTask['Mar'], $task);
+                        break;
+                    case 4:
+                        array_push($resultTask['Apr'], $task);
+                        break;
+                    case 5:
+                        array_push($resultTask['May'], $task);
+                        break;
+                    case 6:
+                        array_push($resultTask['Jun'], $task);
+                        break;
+                    case 7:
+                        array_push($resultTask['Jul'], $task);
+                        break;
+                    case 8:
+                        array_push($resultTask['Aug'], $task);
+                        break;
+                    case 9:
+                        array_push($resultTask['Sep'], $task);
+                        break;
+                    case 10:
+                        array_push($resultTask['Oct'], $task);
+                        break;
+                    case 11:
+                        array_push($resultTask['Nov'], $task);
+                        break;
+                    case 12:
+                        array_push($resultTask['Dec'], $task);
+                        break;
+                }
+            }
+            return response()->json($resultTask, Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json($e, Response::HTTP_INTERNAL_SERVER_ERROR);
         }

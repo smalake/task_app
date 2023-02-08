@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useParams } from "react-router-dom";
 import { Box } from "@mui/system";
 import {
@@ -14,6 +14,7 @@ import {
     Typography,
 } from "@mui/material";
 import { taskApi } from "../api/taskApi";
+import { allTaskState } from "../recoil/allTask";
 
 export const Task = () => {
     const { taskId } = useParams();
@@ -32,6 +33,7 @@ export const Task = () => {
     const [displayEditMode, setDisplayEditMode] = useState("none"); //編集モードの表示・非表示の制御用
     const [disableTabBefore, setDisableTabBefore] = useState(false);
     const [disableTabAfter, setDisableTabAfter] = useState(false);
+    const [tasks, setTasks] = useRecoilState(allTaskState);
 
     // 選択された月に応じて選択できる日を制限する
     useEffect(() => {
@@ -314,6 +316,14 @@ export const Task = () => {
                             </Box>
                             <Button onClick={editBefore} variant="outlined">
                                 編集
+                            </Button>
+                            <Button
+                                onClick={editBefore}
+                                variant="outlined"
+                                color="error"
+                                sx={{ marginLeft: "50px" }}
+                            >
+                                削除
                             </Button>
                         </Box>
                         {/* 編集モード */}

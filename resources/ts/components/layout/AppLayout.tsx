@@ -5,12 +5,6 @@ import { useRecoilState } from "recoil";
 import { Sidebar } from "../common/Sidebar";
 
 export const AppLayout = () => {
-    const navigate = useNavigate();
-    // ページ遷移が発生するたびCookieチェック
-    useEffect(() => {
-        const checkCookie = async () => {};
-        checkCookie();
-    }, [navigate]);
     return (
         <div>
             <Box sx={{ display: "flex" }}>
